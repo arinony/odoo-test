@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--recherches et filtres avancés-->
+
+    <record id="vue_recherche_tache" model="ir.ui.view">
+        <field name="name">mon.module.tache.search</field>
+        <field name="model">mon.module.tache</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Nom de la tâche" filter_domain="[('name', 'ilike', self)]"/>
+                <field name="description" string="Description"/>
+
+                <!--filtres predefinis-->
+                <filter string="Tâches en retard" name="retard" domain="[('est_en_retard','=', True)]"/>
+                <filter string="Tâches à faire" name="a_faire" domain="[('state', '=', 'a_faire')]" />
+                <filter string="Tâches en cours" name="en_cours" domain="[('state','=','en_cours')]"/>
+                <filter string="Tâches terminées" name="termine" domain="[('state','=','termine')]"/>
+
+                <!--filtres par priorite-->
+                <filter string="Haute priorite" name="haute_priorite" domain="[('priorite','=','haute')]" />
+                <filter string="Priorite moyenne" name="moyenne_priorite" domain="[('priorite','=','moyenne')]"/>
+                <filter string="Basse priorite" name="basse_priorite" domain="[('priorite','=','basse')]"/>
+
+                <!--filtres par projet-->
+                <filter string="Par projet" name="group_by_projet" context="{'group_by':'projet_id'}"/>
+
+                <!--filtres combinés-->
+                <filter string="Tâches urgentes" name="urgent" domain="[('est_en_retard','=',True),('priorite','=','haute')]"/>
+                <filter string="Tâches à faire ce mois" name="ce_mois" domain="[('date_echeance','>=', context_today().strftime('%Y-%m-01')),('date_echeance','&lt;=', context_today().strftime('%Y-%m-31'))]"/>
+
+                <!--groupes par défaut-->
+                <group expand="0" string="Group by">
+                    <filter string="Par état" name="group_state" context="{'group_by':'state'}"/>
+                    <filter string="Par priorité" name="group_priorite" context="{'group_by':'priorite'}"/>
+                    <filter string="Par projet" name="group_projet" context="{'group_by':'projet_id'}"/>
+                    <filter string="Par utilisateur" name="group_utilisateur" context="{'group_by':'utilisateur_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

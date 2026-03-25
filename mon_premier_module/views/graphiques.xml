@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--vues graphiques et statistiques-->
+
+    <record id="vue_graphique_taches_par_projet" model="ir.ui.view">
+        <field name="name">mon.module.tache.graphique.projet</field>
+        <field name="model">mon.module.tache</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="projet_id" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Graphique des tâches par état -->
+    <record id="vue_graphique_taches_par_etat" model="ir.ui.view">
+        <field name="name">mon.module.tache.graphique.etat</field>
+        <field name="model">mon.module.tache</field>
+        <field name="arch" type="xml">
+            <graph type="pie">
+                <field name="state" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Graphiques des tâches par priorité -->
+      <record id="vue_graphique_taches_par_priorite" model="ir.ui.view">
+        <field name="name">mon.module.tache.graphique.priorite</field>
+        <field name="model">mon.module.tache</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="priorite" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+
+    <!-- vue Tableau de bord -->
+    <record id="action_tableau_de_bord" model="ir.actions.act_window">
+        <field name="name">Tableau de Bord</field>
+        <field name="res_model">mon.module.tache</field>
+        <field name="view_mode">graph,pivot,calendar</field>
+        <field name="view_id" ref="vue_graphique_taches_par_projet"/>
+        <field name="context">{'search_default_group_by_projet': 1}</field>
+    </record>
+
+    <!-- Menu pour le tableau de bord -->
+     <menuitem
+        id="menu_tableau_de_bord"
+        name="Tableau de Bord"
+        action="action_tableau_de_bord"
+        parent="menu_racine_gestion"
+        sequence="14"/>
+
+</odoo>

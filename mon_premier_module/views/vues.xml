@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!--vue-->
+
+<!--vue calendrier pour les tâches-->
+<record id="vue_calendrier_tache" model="ir.ui.view">
+    <field name="name">mon.module.tache.calendar</field>
+    <field name="model">mon.module.tache</field>
+    <field name="arch" type="xml">
+        <calendar date_start="date_debut"
+                  date_stop="date_echeance"
+                  date_delay="jours_restants"
+                  color="projet_id"
+                  mode="month">
+            <field name="name"/>
+            <field name="projet_id"/>
+            <field name="state"/> 
+            <field name="priorite"/>
+            <field name="utilisateur_id"/>       
+        </calendar>
+
+    </field>
+</record>
+
+     
+<!-- Vue kanban pour les tâches  -->
+<record id="vue_kanban_tache" model="ir.ui.view">
+    <field name="name">mon.module.tache.kanban</field>
+    <field name="model">mon.module.tache</field>
+    <field name="arch" type="xml">
+        <kanban default_group_by="state">
+            <field name="state"/>
+             <progressbar field="state" 
+                 colors='{"a_faire": "warning", "en_cours": "info", "termine": "success"}'
+                 sum="1"
+                 column_class="{'a_faire': 'col-4', 'en_cours': 'col-4', 'termine': 'col-4'}"/>
+            <templates>
+                <t t-name="kanban-box">
+                    <div class="oe_kanban_global_click">
+                        
+                        <div class="o_kanban_record_top">
+                            <strong>Priorité:</strong> <field name="priorite"/>
+                        </div>
+
+                        <div class="o_kanban_record_body">
+                            <div class="o_kanban_record_title">
+                                <field name="name"/>
+                            </div>
+
+                            <div>
+                                <strong>Projet:</strong> <field name="projet_id"/>
+                            </div>
+
+                            <div>
+                                <strong>Échéance:</strong> <field name="date_echeance"/>
+                            </div>
+
+                            <div>
+                                <strong>Jours restants:</strong> <field name="jours_restants"/>
+                            </div>
+                        </div>
+
+                        <div class="o_kanban_record_bottom">
+                            <div>
+                                <field name="etiquette_ids" widget="many2many_tags"/>
+                            </div>
+                            <div>
+                                <strong>Assigné à:</strong> <field name="utilisateur_id"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+    
+
+    <record id="vue_liste_tache_amelioree" model="ir.ui.view">
+        <field name="name">mon.module.tache.tree.amelioree</field>
+        <field name="model">mon.module.tache</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="est_termine" decoration-danger="jours_restants &lt; 0" decoration-warning="priorite=='haute'"
+            default_order="date_echeance asc" create="true" delete="true" edit="true" string="Tâches">
+                <field name="name" string="Tâches" widget="handle"/>
+                <field name="projet_id" string="Projet" groups="base.group_user"/>
+                <field name="utilisateur_id" string="Assigné à"/>
+                <field name="date_echeance" string="Echeance" widget="date"/>
+                <field name="jours_restants" string="Jours restants"/>
+                <field name="priorite" string="Priorité" widget="priority"/>
+                <field name="state" string="Etat" widget="selection"/>
+                <field name="est_termine" string="Terminé" invisible="1"/>
+                <field name="est_en_retard" string="En retard"/>
+                <field name="etiquette_ids" string="Etiquettes" widget="many2many_tags" options="{'color_field':'couleur'}"/>
+
+                <button  name="action_marquer_comme_termine" 
+                    type="object" 
+                    string="Terminer" 
+                    class="btn-success"
+                    icon="fa-check"
+                    />
+
+                <button name="action_reactiver_tache"
+                    type="object"
+                    string="Réactiver"
+                    class="btn-warning"
+                    icon="fa-refresh"
+                    />    
+            </tree>
+        </field>
+    </record>
+
+    <!--vue formulaire amelioree pour les tâches-->
+    <record id="vue_form_tache_amelioree" model="ir.ui.view">
+        <field name="name">mon.module.tache.form.amelioree</field>
+        <field name="model">mon.module.tache</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Information principales">
+                            <field name="name"/>
+                            <field name="projet_id"/>
+                            <field name="utilisateur_id"/>
+                        </group>
+                        <group string="Date et statut">
+                            <field name="date_creation" readonly="1"/>
+                            <field name="date_echeance"/>
+                            <field name="jours_restants" readonly="1"/>
+                            <field name="est_termine"/>
+                            <field name="est_en_retard" readonly="1" />
+                            <field name="state" widget="radio" options="{'horizontal':true}"/>
+
+                            <div class="button-box">
+                                <button name="action_marquer_comme_termine"
+                                        string="Marquer comme Terminé"
+                                        type="object"
+                                        class="btn-primary"/>
+
+                                <button name="action_reactiver_tache"
+                                        string="Réactiver la Tâche"
+                                        type="object"
+                                        class="btn-secondary"/>
+                            </div>
+                        </group>
+                        </group>
+                        <group string="Détails">
+                            <field name="priorite" widget="radio"/>
+                            <field name="etiquette_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1" placeholder="Décrivez votre tâche..."></field>
+                        </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--  ACTION -->
+    <record id="action_mes_taches" model="ir.actions.act_window">
+        <field name="name">Mes Tâches</field>
+        <field name="res_model">mon.module.tache</field>
+        <field name="view_mode">kanban,tree,form,calendar</field>
+        <field name="view_id" ref="vue_kanban_tache"/>
+    </record>
+
+    <record id="action_mes_projets" model="ir.actions.act_window">
+        <field name="name">Mes Projets</field>
+        <field name="res_model">mon.module.projet</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+     <record id="action_mes_etiquettes" model="ir.actions.act_window">
+        <field name="name">Mes Etiquettes</field>
+        <field name="res_model">mon.module.etiquette</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+  
+
+   
+    <!-- 2. MENU ENSUITE -->
+    <menuitem 
+    id="menu_racine_gestion"
+    name="Gestion des tâches"
+    sequence="10"
+    />
+
+    <menuitem 
+    id="menu_mes_taches" 
+    name="Mes Tâches" 
+    action="action_mes_taches"
+    parent="menu_racine_gestion"
+    sequence="11"
+    />
+
+    <menuitem 
+    id="menu_mes_projets"
+    name="Mes Projets"
+    action="action_mes_projets"
+    parent="menu_racine_gestion"
+    sequence="12"
+    />
+
+    <menuitem 
+    id="menu_mes_etiquettes"
+    name="Mes Etiquettes"
+    action="action_mes_etiquettes"
+    parent="menu_racine_gestion"
+    sequence="13"/>
+
+
+</odoo>

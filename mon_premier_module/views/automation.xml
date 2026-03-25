@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--action serveur pour automation-->
+    <record id="action_auto_retard" model="ir.actions.server">
+        <field name="name">Verifier les tâches en retard</field>
+        <field name="model_id" ref="model_mon_module_tache"/>
+        <field name="state">code</field>
+        <field name="code">
+model.action_automatique_taches_en_retard()
+        </field>
+    </record>
+
+    <!-- Planificateur (cron) pour execution automatique -->
+    <record id="cron_verifier_echeances" model="ir.cron">
+        <field name="name">Vérifier les échéances des tâches</field>
+        <field name="model_id" ref="model_mon_module_tache"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_verifier_echeances()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall">False</field>
+        <field name="active">True</field>
+    </record>
+
+    <!--action manuelle pour lancer la verification-->
+    <record id="action_verifier_retards" model="ir.actions.server">
+        <field name="name">Vérifier les retards maintenant</field>
+        <field name="model_id" ref="model_mon_module_tache"></field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[ 
+count = model.action_automatique_taches_en_retard()
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'display_notification',
+    'params':{
+        'title': 'Vérification terminée',
+        'message': f'{count} tâches mises à jour',
+        'type': 'success',
+        'sticky': False,
+    }
+}
+        ]]></field>
+    </record>
+</odoo>

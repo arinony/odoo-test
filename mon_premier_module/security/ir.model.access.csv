@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mon_module_tache_user,mon.module.tache.user,model_mon_module_tache,base.group_user,1,1,1,1
+access_mon_module_projet_user,mon.module.projet.user,model_mon_module_projet,base.group_user,1,1,1,1
+access_mon_module_etiquette_user,mon.module.etiquette.user,model_mon_module_etiquette,base.group_user,1,1,1,1
